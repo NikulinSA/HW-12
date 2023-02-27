@@ -65,9 +65,13 @@ $example_persons_array = [
         echo '<br>' ;
         echo '<br>' ;
         getFullnameFromParts($surname,$name,$partonomyc);
+        $gensum = getGenderFromName($stringName);
         echo '<br>' ;
         echo '<br>' ;
         getShortName($stringName);
+        echo '<br>' ;
+        echo '<br>' ;
+        // getGenderDescription($example_persons_array, $stringName);
         // echo $example_persons_array[$sum]["fullname"];
         $sum++;
         if(!empty($k['fullname']) && is_array($k['fullname'])){ 
@@ -124,6 +128,47 @@ function getShortName($stringName){
     $surname1 = mb_substr($surname1, 0, 1);
     $namesurname = $name1 . ' ' . $surname1 . '.';
     // $namesurname = mb_convert_encoding($namesurname, "windows-1251");
-    var_dump($namesurname);
+    echo $namesurname;
     return $namesurname;
+}
+
+// определение гендера
+function getGenderFromName($stringName){
+    $gensum = 0;
+    $arr = getPartsFromFullName($stringName);
+    $surname1 = $arr["surname"];
+    $name1 = $arr["name"];
+    $partonomyc1 = $arr["partonomyc"];
+    if (mb_substr($surname1,-2) == 'ва'){
+        $gensum--;
+    }elseif(mb_substr($surname1,-1) == 'в'){
+        $gensum++;
+    }
+        if (mb_substr($name1,-1) == 'а'){
+            $gensum--;
+        }elseif(mb_substr($name1,-1) == 'й'|| mb_substr($name1,-1) == 'н'){
+            $gensum++;
+        }
+            if (mb_substr($partonomyc1, -3) == 'вна'){
+                $gensum--;
+            } elseif(mb_substr($partonomyc1, -2) == 'ич'){
+                $gensum++;
+            } 
+    if($gensum > 0){
+        $gensum = 1 . ' ' . 'мужской';
+    }elseif($gensum < 0){
+        $gensum = -1 . ' ' . 'женский';
+    }else{
+        $gensum = 0 . ' ' . 'не удалось определить';
+    }
+    echo $gensum;
+    return $gensum;
+}
+
+// функция определения гендерного состава
+function getGenderDescription($example_persons_array, $stringName){
+    $example_persons_array["gender"] = getGenderFromName($stringName);
+    print_r($example_persons_array);
+    echo '<br>';
+    return $example_persons_array;
 }
